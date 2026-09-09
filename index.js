@@ -1,10 +1,9 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, downloadContentFromMessage } = require('@whiskeysockets/baileys');
 const pino = require('pino');
-const readline = require('readline');
 const fs = require('fs');
 
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-const question = (text) => new Promise((resolve) => rl.question(text, resolve));
+// Yahan apna WhatsApp number likh dein (Country code ke sath)
+const OWNER_NUMBER = '923491443054';
 
 let botMode = 'public';
 
@@ -18,11 +17,14 @@ async function startBatmanBot() {
     });
 
     if (!sock.authState.creds.registered) {
-        const phoneNumber = await question('Apna WhatsApp number likhein (Country code ke sath, misal ke tor par 923491443054): ');
         setTimeout(async () => {
-            const code = await sock.requestPairingCode(phoneNumber.trim());
-            console.log(`\n🦇 APKA PAIRING CODE YEH HAI: \x1b[32m${code}\x1b[0m\n`);
-        }, 3000);
+            try {
+                const code = await sock.requestPairingCode(OWNER_NUMBER);
+                console.log(`\n🦇 APKA PAIRING CODE YEH HAI: \x1b[32m${code}\x1b[0m\n`);
+            } catch (err) {
+                console.log('Error getting pairing code:', err);
+            }
+        }, 4000);
     }
 
     sock.ev.on('connection.update', (update) => {
@@ -46,7 +48,7 @@ async function startBatmanBot() {
         const chatId = m.key.remoteJid;
         const senderId = m.key.participant || chatId;
         const botNumber = sock.user.id.split(':')[0] + '@s.whatsapp.net';
-        const isOwner = m.key.fromMe || senderId.includes('923491443054');
+        const isOwner = m.key.fromMe || senderId.includes(OWNER_NUMBER);
 
         const text = m.message.conversation || m.message.extendedTextMessage?.text || '';
         if (!text.startsWith('.')) return;
@@ -171,4 +173,4 @@ Bot Mode: ${botMode.toUpperCase()}
 }
 
 startBatmanBot();
-                   
+                    
