@@ -1,0 +1,13 @@
+{
+  "name": "batman-bot",
+  "version": "1.0.0",
+  "description": "Famous Batman WhatsApp Bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "latest",
+    "pino": "^8.19.0"
+  }
+}
